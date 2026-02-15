@@ -1,25 +1,116 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <title>Cyber Threat Intelligence Console</title>
 
 <style>
 
-body{background:black;color:#00ffcc;font-family:monospace;text-align:center}
+body{
+background:#020617;
+color:#00ffcc;
+font-family:monospace;
+margin:0;
+overflow:hidden;
+}
+
+/* INTRO ANIMATION */
+
+#intro{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.glitch{
+animation:glitch 1s infinite;
+}
+
+@keyframes glitch{
+0%{opacity:1}
+50%{opacity:0.4}
+100%{opacity:1}
+}
+
+/* DASHBOARD */
+
+#dashboard{
+display:none;
+padding:20px;
+text-align:center;
+}
+
+.panel{
+background:#0f172a;
+border-radius:12px;
+box-shadow:0 0 20px #00ffcc33;
+padding:20px;
+margin:20px auto;
+width:80%;
+}
+
+/* RADAR */
+
+.radar{
+width:200px;
+height:200px;
+border-radius:50%;
+border:2px solid #00ffcc;
+margin:auto;
+position:relative;
+overflow:hidden;
+}
+
+.sweep{
+position:absolute;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, #00ffcc44);
+animation:rotate 2s linear infinite;
+transform-origin:center;
+}
+
+@keyframes rotate{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+/* INPUT */
+
+input{
+padding:12px;
+width:60%;
+background:black;
+color:#00ffcc;
+border:1px solid #00ffcc;
+}
+
+button{
+padding:12px;
+background:#00ffcc;
+border:none;
+cursor:pointer;
+}
+
+/* RISK BAR */
 
 .bar{
-width:400px;
+width:100%;
 height:25px;
 background:#111;
-margin:auto;
+margin-top:15px;
 }
 
 .fill{
 height:100%;
-background:red;
 width:0%;
+background:red;
 transition:1s;
 }
 
@@ -29,12 +120,32 @@ transition:1s;
 
 <body>
 
-<h1>Cyber Threat Intelligence Console</h1>
+<!-- INTRO SCREEN -->
 
-<input id="urlInput" placeholder="Paste link">
-<button onclick="checkURL()">SCAN</button>
+<div id="intro">
 
-<h2 id="threat"></h2>
+<h1 class="glitch">CYBER DEFENSE SYSTEM BOOTING...</h1>
+<p class="glitch">Loading threat intelligence engine...</p>
+<p class="glitch">Initializing AI scanner...</p>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard">
+
+<h1>CYBER THREAT INTELLIGENCE DASHBOARD</h1>
+
+<div class="radar">
+<div class="sweep"></div>
+</div>
+
+<div class="panel">
+
+<input id="urlInput" placeholder="Enter URL to scan">
+<button onclick="checkURL()">SCAN TARGET</button>
+
+<h2 id="status"></h2>
 
 <div class="bar">
 <div class="fill" id="riskFill"></div>
@@ -42,13 +153,39 @@ transition:1s;
 
 <p id="domain"></p>
 <p id="ip"></p>
+<p id="country"></p>
+<p id="isp"></p>
+
+<h3>Threat Intelligence</h3>
 <p id="reasons"></p>
+
+<h3>Security Analysis</h3>
 <p id="web"></p>
+
 <p id="explanation"></p>
+
+</div>
+
+</div>
 
 <script>
 
+/* INTRO 5 SECOND ANIMATION */
+
+setTimeout(()=>{
+document.getElementById("intro").style.display="none";
+document.getElementById("dashboard").style.display="block";
+document.body.style.overflow="auto";
+},5000);
+
+/* SCAN FUNCTION */
+
 async function checkURL(){
+
+const status=document.getElementById("status");
+
+status.innerText="SCANNING TARGET...";
+status.style.color="orange";
 
 const url=document.getElementById("urlInput").value;
 
@@ -60,14 +197,22 @@ body:JSON.stringify({url:url})
 
 const data=await res.json();
 
-document.getElementById("threat").innerText="Threat Level: "+data.threat;
+let color="lime";
+
+if(data.score>=8){color="red"}
+else if(data.score>=4){color="orange"}
+
+status.style.color=color;
+status.innerText="Threat Level: "+data.threat;
 
 document.getElementById("riskFill").style.width=(data.score*10)+"%";
 
 document.getElementById("domain").innerText="Domain: "+data.domain;
 document.getElementById("ip").innerText="IP: "+data.ip;
-document.getElementById("reasons").innerText="Reasons: "+data.reasons.join(", ");
-document.getElementById("web").innerText="Web Scan: "+data.web_findings.join(", ");
+
+document.getElementById("reasons").innerText=data.reasons.join(", ");
+document.getElementById("web").innerText=data.web_findings.join(", ");
+
 document.getElementById("explanation").innerText=data.explanation;
 
 }
