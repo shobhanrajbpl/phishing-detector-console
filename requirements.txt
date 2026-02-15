@@ -1,0 +1,6 @@
+Flask
+tldextract
+requests
+beautifulsoup4
+python-whois
+scikit-learn
