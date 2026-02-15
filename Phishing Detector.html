@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5000/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Phishing Detector</title>
+</head>
+<body>
+
+<h2>Phishing Link Detection System</h2>
+
+<input type="text" id="urlInput" placeholder="Enter URL">
+<button onclick="checkURL()">Check</button>
+
+<p id="result">Result: Likely Safe | Risk Score: 1</p>
+
+<script>
+async function checkURL() {
+    const url = document.getElementById("urlInput").value;
+
+    const response = await fetch("/check", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({url: url})
+    });
+
+    const data = await response.json();
+
+    document.getElementById("result").innerText =
+        "Result: " + data.result + " | Risk Score: " + data.risk_score;
+}
+</script>
+
+
+</body></html>
