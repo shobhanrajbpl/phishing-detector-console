@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Cyber Threat Intelligence Console</title>
+
+<style>
+
+body{background:black;color:#00ffcc;font-family:monospace;text-align:center}
+
+.bar{
+width:400px;
+height:25px;
+background:#111;
+margin:auto;
+}
+
+.fill{
+height:100%;
+background:red;
+width:0%;
+transition:1s;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Cyber Threat Intelligence Console</h1>
+
+<input id="urlInput" placeholder="Paste link">
+<button onclick="checkURL()">SCAN</button>
+
+<h2 id="threat"></h2>
+
+<div class="bar">
+<div class="fill" id="riskFill"></div>
+</div>
+
+<p id="domain"></p>
+<p id="ip"></p>
+<p id="reasons"></p>
+<p id="web"></p>
+<p id="explanation"></p>
+
+<script>
+
+async function checkURL(){
+
+const url=document.getElementById("urlInput").value;
+
+const res=await fetch("/check",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({url:url})
+});
+
+const data=await res.json();
+
+document.getElementById("threat").innerText="Threat Level: "+data.threat;
+
+document.getElementById("riskFill").style.width=(data.score*10)+"%";
+
+document.getElementById("domain").innerText="Domain: "+data.domain;
+document.getElementById("ip").innerText="IP: "+data.ip;
+document.getElementById("reasons").innerText="Reasons: "+data.reasons.join(", ");
+document.getElementById("web").innerText="Web Scan: "+data.web_findings.join(", ");
+document.getElementById("explanation").innerText=data.explanation;
+
+}
+
+</script>
+
+</body>
+</html>
